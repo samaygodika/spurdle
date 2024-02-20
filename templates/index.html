@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Spurdle Spotify Web Playback SDK</title>
+</head>
+<body>
+    <div>
+        <button id="play-button">Play</button>
+    </div>
+
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+    window.onSpotifyWebPlaybackSDKReady = () => {
+        const token = "{{ session['token_info']['access_token'] }}"; // Use the token from Flask session
+        const player = new Spotify.Player({
+            name: 'Web Playback SDK Quick Start Player',
+            getOAuthToken: cb => { cb(token); }
+        });
+
+        // Error handling
+        player.addListener('initialization_error', ({ message }) => { console.error(message); });
+        player.addListener('authentication_error', ({ message }) => { console.error(message); });
+        player.addListener('account_error', ({ message }) => { console.error(message); });
+        player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+        // Playback status updates
+        player.addListener('player_state_changed', state => { console.log(state); });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
+            document.getElementById('play-button').addEventListener('click', function() {
+                fetch('/get-random-song')
+                    .then(response => response.json())
+                    .then(data => {
+                        const uri = data.uri; // Get the song URI from the backend
+                        play(token, device_id, uri); // Play the song using the SDK
+                    })
+                    .catch(error => console.error('Error fetching random song:', error));
+                });
+        });
+
+        // Not Ready
+        player.addListener('not_ready', ({ device_id }) => {
+            console.log('Device ID has gone offline', device_id);
+        });
+
+        // Connect to the player!
+        player.connect();
+    };
+
+
+    // Play a specified track
+    function play(token, device_id, uri) {
+        console.log('Playing track:', uri);
+        fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: [uri] }), // Ensure uri is wrapped in an array,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        } else {
+            console.log('Playback started successfully');
+        }
+    }).catch(error => {
+        console.error('Error in playback:', error);
+    });
+    }
+    </script>
+</body>
+</html>
