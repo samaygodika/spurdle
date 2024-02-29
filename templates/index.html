@@ -2,13 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Spurdle Spotify Web Playback SDK</title>
+    <title>Spurdle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif; /* Updated the font here */
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            text-align: center;
+        }
+        #game-controls, #guess-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center; /* Center aligns the content */
+        }
+        h1, h2 {
+            font-family: 'Open Sans', sans-serif;
+            color: #1DB954; /* Spotify green */
+        }
+        button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: inline-block; /* Changed to inline-block for center alignment */
+        }
+        button:hover {
+            background-color: #1ed760;
+        }
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: calc(100% - 24px); /* Adjust input width considering padding */
+            display: block; /* Make the input block to fill width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #guess-form {
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 <body>
-    <div>
+    <h1>Spurdle ft. Spotify</h1>
+    <div id="game-controls">
         <button id="play-button">Play</button>
+        <audio id="song-snippet" controls></audio>
     </div>
 
+    <div id="guess-section">
+        <h2>Guess the Song</h2>
+        <form id="guess-form">
+            <input type="text" id="song-guess" name="songGuess" placeholder="Enter your guess here" required>
+            <button type="submit">Submit Guess</button>
+        </form>
+        <div id="guess-result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>    
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -34,8 +103,8 @@
                 fetch('/get-random-song')
                     .then(response => response.json())
                     .then(data => {
-                        const uri = data.uri; // Get the song URI from the backend
-                        play(token, device_id, uri); // Play the song using the SDK
+                        const previewUrl = data.previewUrl;
+                        playSnippet(previewUrl, 10);
                     })
                     .catch(error => console.error('Error fetching random song:', error));
                 });
@@ -52,6 +121,7 @@
 
 
     // Play a specified track
+    /*
     function play(token, device_id, uri) {
         console.log('Playing track:', uri);
         fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
@@ -71,6 +141,53 @@
         console.error('Error in playback:', error);
     });
     }
+    */
+
+    function playSnippet(previewUrl, durationInSeconds) {
+        console.log('Playing track:', previewUrl);
+
+        let audio = document.getElementById('song-snippet');
+        audio.src = previewUrl;
+        audio.play();
+
+        setTimeout(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }, durationInSeconds * 1000);
+    }
+
+    document.getElementById('guess-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+
+        const guess = document.getElementById('song-guess').value;
+        fetch('/submit-guess', { // Assuming your backend endpoint is /submit-guess
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ guess: guess }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('guess-result').textContent = data.message; // Displaying backend response
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    $(document).ready(function() {
+    fetch('/get-liked-songs')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Autocomplete data:", data); // Add this line to debug
+            $("#song-guess").autocomplete({
+                source: data, // Adjust formatting as needed
+                minLength: 2, // Start showing suggestions after 2 characters
+            });
+        })
+        .catch(error => console.error('Error fetching liked songs:', error));
+    });
     </script>
 </body>
 </html>

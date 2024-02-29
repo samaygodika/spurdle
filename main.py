@@ -2,7 +2,7 @@ from flask import Flask, jsonify, redirect, request, session, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import uuid
-# import os
+from flask_caching import Cache
 
 import random
 # app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
@@ -13,6 +13,10 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = './.flask_session/'
 app.config['SESSION_COOKIE_NAME'] = 'spotify_auth_session'
 app.config['SESSION_PERMANENT'] = False
+app.config['CACHE_TYPE'] = 'SimpleCache'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache timeout in seconds
+
+cache = Cache(app)
 
 # Replace these with your Spotify app credentials
 client_id = "3d817d22c6fa48a0a0f0c3ded9dee186"
@@ -42,6 +46,24 @@ def callback():
     token_info = sp_oauth.get_access_token(code)
     session['token_info'] = token_info
     return redirect('/')
+
+@app.route('/get-liked-songs')
+@cache.cached(timeout=300, key_prefix='liked_songs')  # Cache this view for 5 minutes
+def get_liked_songs():
+    # Your logic to fetch liked songs
+    sp = spotipy.Spotify(auth_manager=sp_oauth)
+
+    results = sp.current_user_saved_tracks()
+    songs = results['items']
+
+    while results['next']:
+        results = sp.next(results)  
+        songs.extend(results['items'])
+    
+    # Assuming you want to return a simplified list of song names
+    song_list = [song['track']['name'] for song in songs]
+    print('got all songs')
+    return jsonify(song_list)
 
 @app.route('/get-random-song')
 def get_random_liked_song():
@@ -73,9 +95,18 @@ def get_random_liked_song():
     #     "spotify_url": track['external_urls']['spotify']  # Link to the song on Spotify
     # }
     print(track['name'])
-    return jsonify({"uri": track['uri']})
+
+    return jsonify({"previewUrl": track['preview_url']})
 
     return selected_song
+
+@app.route('/submit-guess', methods=['POST'])
+def submit_guess():
+    data = request.get_json()
+    guess = data.get('guess', 'none')
+
+    print(guess)
+    return jsonify({'message': 'Guess received', 'guess': guess})
 
 @app.route('/logout')
 def logout():
