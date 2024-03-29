@@ -96,9 +96,7 @@ def get_random_liked_song():
     # }
     print(track['name'])
 
-    return jsonify({"previewUrl": track['preview_url']})
-
-    return selected_song
+    return jsonify({"previewUrl": track['preview_url'], "title": track['name']})
 
 @app.route('/submit-guess', methods=['POST'])
 def submit_guess():
