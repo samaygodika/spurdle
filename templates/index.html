@@ -401,7 +401,7 @@
             } else {
                 // No guesses left, handle end of game (disable form, show message, etc.)
                 document.getElementById('guess-result').className = 'incorrect-guess'; // Apply incorrect guess class for game over
-                document.getElementById('guess-result').textContent = 'No more guesses left! Game Over.';
+                document.getElementById('guess-result').textContent = `Game Over. The song was ${correct_song}.`;
                 playButton.disabled = true; // Disable the play button if the game is over
                 guessInput.disabled = true; // Disable the input field if the game is won
                 document.getElementById('guess-form').querySelector('button[type="submit"]').disabled = true; // Disable the submit button in the guess form
