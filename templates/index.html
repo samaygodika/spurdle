@@ -107,6 +107,118 @@
             color: white;
         }
 
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(0,0,0,0.6); /* Dimmed background */
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 10% auto; /* 10% from the top and centered */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 50%; /* You might want to use media queries to adjust width for mobile */
+            animation: modalOpen 0.5s; /* Smooth opening animation */
+        }
+
+        .modal-content h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px; /* Adjust space below heading */
+        }
+
+        .modal-content h3 { /* New style for subheadings */
+            color: #333;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content ul {
+            text-align: left; /* Align bullet points to the left */
+            padding-left: 40px; /* Adjust padding to position the bullet points */
+        }
+
+        .modal-content li {
+            text-align: left; /* Ensure list items align to the left */
+            margin-bottom: 5px; /* Space between list items */
+        }
+
+        @keyframes modalOpen {
+            from {
+                opacity: 0;
+                margin-top: 0%;
+            }
+            to {
+                opacity: 1;
+                margin-top: 10%;
+            }
+        }
+
+        @keyframes modalClose {
+            from {
+                opacity: 1;
+                margin-top: 10%;
+            }
+            to {
+                opacity: 0;
+                margin-top: 70%; /* or any other value you prefer */
+            }
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .close:hover,
+            .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        p, li {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Add styles for the button if you have one in your modal */
+        .modal-button {
+            background-color: #1DB954;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-button:hover {
+            background-color: #17a143; /* Slightly darker green for hover effect */
+        }
+
+        .modal-closing {
+            animation: modalClose 0.5s forwards; /* 'forwards' will keep the final state after the animation */
+        }
+
     </style>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
@@ -134,6 +246,22 @@
         </div>
     </div>
 
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>How To Play</h2>
+          <h3>Guess the song in 5 tries</h3>
+           <!-- <p>You know it, it's from your liked songs on Spotify 😉</p> -->
+          <ul>
+            <li>Each guess must be the name of a song.</li>
+            <li>The length of the song preview will increase with each incorrect guess.</li>
+            <li>You know it, it's from your liked songs on Spotify 😉</li>
+          </ul>
+          <h3>Good luck!</h3>
+        </div>
+    </div>
+      
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>    
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
@@ -293,6 +421,39 @@
         })
         .catch(error => console.error('Error fetching liked songs:', error));
     });
+
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName('close')[0];
+
+    // When the user clicks anywhere outside of the modal, close it
+   window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.classList.add('modal-closing');
+        setTimeout(() => {
+            modal.style.display = "none";
+            modal.classList.remove('modal-closing');
+        }, 500); // Match the timeout to the animation duration
+    }
+    }
+
+
+    // Open the modal when the page loads
+    window.onload = function() {
+        modal.style.display = "block";
+    }
+
+    // when the (x) is clicked
+    span.onclick = function() {
+        modal.classList.add('modal-closing'); // Start the closing animation
+        setTimeout(() => {
+            modal.style.display = "none"; // Hide the modal after the animation
+            modal.classList.remove('modal-closing'); // Clean up: remove the class if the modal needs to open again later
+        }, 500); // This timeout duration should match the animation duration
+    }
+
     </script>
 </body>
 </html>
