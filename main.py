@@ -21,8 +21,8 @@ cache = Cache(app)
 # Replace these with your Spotify app credentials
 client_id = "3d817d22c6fa48a0a0f0c3ded9dee186"
 client_secret = "a10cb8549a244287b382948139819a43"
-# redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
-redirect_uri = "http://localhost:8888/callback"
+redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
+# redirect_uri = "http://localhost:8888/callback"
 
 scope = "streaming user-read-email user-read-private user-modify-playback-state user-library-read"
 
