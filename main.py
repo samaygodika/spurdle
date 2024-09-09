@@ -21,8 +21,8 @@ cache = Cache(app)
 # Replace these with your Spotify app credentials
 client_id = "3d817d22c6fa48a0a0f0c3ded9dee186"
 client_secret = "a10cb8549a244287b382948139819a43"
-redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
-# redirect_uri = "http://localhost:8888/callback"
+# redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
+redirect_uri = "http://localhost:8888/callback"
 
 scope = "streaming user-read-email user-read-private user-modify-playback-state user-library-read"
 
@@ -95,17 +95,31 @@ def get_random_liked_song():
     #     "preview_url": track['preview_url'],  # URL to a 30s preview of the song, if available
     #     "spotify_url": track['external_urls']['spotify']  # Link to the song on Spotify
     # }
-    print(track['name'])
+
+    # Fetch the user information
+    user_info = sp.current_user()
+    # Get the Spotify username (display name)
+    username = user_info['display_name']
+    print("User:", username)
+
+    print("Correct answer:", track['name'])
+
+    session['correct_answer'] = track['name']
 
     return jsonify({"previewUrl": track['preview_url'], "title": track['name']})
 
 @app.route('/submit-guess', methods=['POST'])
 def submit_guess():
     data = request.get_json()
-    guess = data.get('guess', 'none')
-
-    print(guess)
-    return jsonify({'message': 'Guess received', 'guess': guess})
+    guess = data.get('guess', '').strip().lower()
+    correct_answer = session.get('correct_answer', '').lower()
+    
+    if guess == correct_answer:
+        result = "correct"
+    else:
+        result = "incorrect"
+    
+    return jsonify({'result': result, 'correct_answer': correct_answer})
 
 @app.route('/logout')
 def logout():

@@ -6,26 +6,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Open Sans', sans-serif; /* Updated the font here */
-            background-color: #f4f4f4;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             margin: 0;
             padding: 20px;
-            color: #333;
             text-align: center;
         }
+
+        h1 {
+            color: #1DB954;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
         #game-controls, #guess-section {
-            background-color: #fff;
+            background-color: #282828;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: 20px auto;
-            text-align: center; /* Center aligns the content */
         }
-        h1, h2 {
-            font-family: 'Open Sans', sans-serif;
-            color: #1DB954; /* Spotify green */
-        }
+
         button {
             background-color: #1DB954;
             color: white;
@@ -35,106 +38,101 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
-            display: inline-block; /* Changed to inline-block for center alignment */
+            transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #1ed760;
         }
-        audio {
-            width: 100%;
-            margin-top: 20px;
+
+        button:disabled {
+            background-color: #535353;
+            cursor: not-allowed;
         }
+
         input[type="text"] {
             padding: 10px;
             margin-top: 10px;
             border-radius: 5px;
-            border: 1px solid #ccc;
-            width: calc(100% - 24px); /* Adjust input width considering padding */
-            display: block; /* Make the input block to fill width */
-            margin-left: auto;
-            margin-right: auto;
+            border: 1px solid #535353;
+            background-color: #404040;
+            color: #ffffff;
+            width: calc(100% - 22px);
         }
-        #guess-form {
+
+        #progress-container {
+            width: 100%;
+            background-color: #404040;
+            border-radius: 5px;
+            height: 10px;
             margin-top: 20px;
         }
-        #previous-guesses {
-            margin-top: 20px;
+
+        #progress-bar {
+            height: 100%;
+            background-color: #1DB954;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
         }
 
         #guesses-list {
-            list-style-type: none; /* Removes bullet points from the list */
+            list-style-type: none;
             padding: 0;
+            margin-top: 20px;
         }
 
         #guesses-list li {
-            background-color: #f0f0f0; /* Light grey background */
+            background-color: #404040;
             margin-top: 5px;
             padding: 10px;
             border-radius: 5px;
         }
 
-        #progress-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            height: 10px;
-            margin-top: 10px;
-        }
-
-        #progress-bar {
-            height: 100%;
-            background-color: #4caf50; /* Adjust the color to fit your design */
-            width: 0%; /* Initial state */
-            border-radius: 5px;
-        }
-
-        #guess-result {
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
         .correct-guess {
-            background-color: #4CAF50; /* Green */
+            background-color: #1DB954;
             color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
         }
 
         .incorrect-guess {
-            background-color: #f44336; /* Red */
+            background-color: #E22134;
             color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
         }
 
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 2; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 2;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            background-color: rgba(0,0,0,0.6); /* Dimmed background */
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
         }
 
         .modal-content {
             background-color: #ffffff;
-            margin: 10% auto; /* 10% from the top and centered */
+            margin: 10% auto;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 50%; /* You might want to use media queries to adjust width for mobile */
-            animation: modalOpen 0.5s; /* Smooth opening animation */
+            width: 50%;
+            animation: modalOpen 0.5s;
         }
 
         .modal-content h2 {
             color: #333;
             font-weight: 600;
-            margin-bottom: 10px; /* Adjust space below heading */
+            margin-bottom: 10px;
         }
 
-        .modal-content h3 { /* New style for subheadings */
+        .modal-content h3 {
             color: #333;
             font-weight: 600;
             margin-top: 20px;
@@ -142,13 +140,13 @@
         }
 
         .modal-content ul {
-            text-align: left; /* Align bullet points to the left */
-            padding-left: 40px; /* Adjust padding to position the bullet points */
+            text-align: left;
+            padding-left: 40px;
         }
 
         .modal-content li {
-            text-align: left; /* Ensure list items align to the left */
-            margin-bottom: 5px; /* Space between list items */
+            text-align: left;
+            margin-bottom: 5px;
         }
 
         @keyframes modalOpen {
@@ -169,7 +167,7 @@
             }
             to {
                 opacity: 0;
-                margin-top: 70%; /* or any other value you prefer */
+                margin-top: 70%;
             }
         }
 
@@ -200,7 +198,6 @@
             line-height: 1.6;
         }
 
-        /* Add styles for the button if you have one in your modal */
         .modal-button {
             background-color: #1DB954;
             color: #fff;
@@ -212,11 +209,11 @@
         }
 
         .modal-button:hover {
-            background-color: #17a143; /* Slightly darker green for hover effect */
+            background-color: #17a143;
         }
 
         .modal-closing {
-            animation: modalClose 0.5s forwards; /* 'forwards' will keep the final state after the animation */
+            animation: modalClose 0.5s forwards;
         }
 
     </style>
@@ -246,7 +243,6 @@
         </div>
     </div>
 
-    <!-- The Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -267,192 +263,169 @@
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
 
-        let isPlaying = false; // Track whether the song is playing
+        let isPlaying = false;
         let updateProgressBar;
-        let guessesLeft = 5; // Total guesses allowed
-        let snippetLength = 1; // Starting snippet length in seconds
-        let correct_song;
+        let guessesLeft = 5;
+        let snippetLength = 1;
+        let currentSongUrl = null;
 
         const playButton = document.getElementById('play-button');
         const progressBar = document.getElementById('progress-bar');
-        const audio = document.getElementById('song-snippet'); 
-        let currentSongUrl = null; // Variable to store the current song URL
+        const audio = document.getElementById('song-snippet');
+        const guessForm = document.getElementById('guess-form');
+        const guessInput = document.getElementById('song-guess');
+        const guessesList = document.getElementById('guesses-list');
+        const guessResult = document.getElementById('guess-result');
 
-    window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = "{{ session['token_info']['access_token'] }}"; // Use the token from Flask session
-        const player = new Spotify.Player({
-            name: 'Web Playback SDK Quick Start Player',
-            getOAuthToken: cb => { cb(token); }
-        });
-
-        // Error handling
-        player.addListener('initialization_error', ({ message }) => { console.error(message); });
-        player.addListener('authentication_error', ({ message }) => { console.error(message); });
-        player.addListener('account_error', ({ message }) => { console.error(message); });
-        player.addListener('playback_error', ({ message }) => { console.error(message); });
-
-        // Playback status updates
-        player.addListener('player_state_changed', state => { console.log(state); });
-
-        player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
-
-            playButton.addEventListener('click', function() {
-                if (!isPlaying) {
-                    // If not playing, fetch and play the song
-                    if (currentSongUrl === null) {
-                        fetch('/get-random-song')
-                            .then(response => response.json())
-                            .then(data => {
-                                currentSongUrl = data.previewUrl;
-                                correct_song = data.title; // global variable to store the correct song
-                                playSnippet(currentSongUrl, 10); // Use playSnippet to handle playback and UI
+        playButton.addEventListener('click', function() {
+            if (!isPlaying) {
+                if (currentSongUrl === null) {
+                    fetch('/get-random-song')
+                        .then(response => response.json())
+                        .then(data => {
+                            currentSongUrl = data.previewUrl;
+                            playSnippet(currentSongUrl);
                         })
                         .catch(error => {
                             console.error('Error fetching random song:', error);
                         });
-                    } else {
-                        // We already have a song URL, so just play it
-                        playSnippet(currentSongUrl, 10);
-                    }
                 } else {
-                    // If the song is playing, pause it
-                    audio.pause();
-                    clearInterval(updateProgressBar); // Stop updating the progress bar
-                    audio.currentTime = 0; // Reset audio
-                    playButton.textContent = 'Play'; // Change button text back to 'Play'
-                    isPlaying = false;
+                    playSnippet(currentSongUrl);
                 }
-            });
-        });
-
-        audio.addEventListener('ended', () => {
-            // When the audio naturally ends, reset everything
-            clearInterval(updateProgressBar);
-            progressBar.style.width = '0%'; // Reset progress bar
-            playButton.textContent = 'Play'; // Change button text back to 'Play'
-            isPlaying = false;
-        });
-
-
-        // Not Ready
-        player.addListener('not_ready', ({ device_id }) => {
-            console.log('Device ID has gone offline', device_id);
-        });
-
-        // Connect to the player!
-        player.connect();
-    };
-
-    function playSnippet(previewUrl) {
-        audio.src = previewUrl; // Set the source of the audio element
-        audio.play(); // Start playing
-        playButton.textContent = 'Pause'; // Change button text to 'Pause'
-        isPlaying = true;
-
-        // Initialize or reset progress bar
-        progressBar.style.width = '0%';
-        let secondsPassed = 0;
-        clearInterval(updateProgressBar); // Clear any existing interval
-        updateProgressBar = setInterval(() => {
-            secondsPassed++;
-            const percentage = Math.min((secondsPassed / snippetLength) * 100, 100); // Ensure it doesn't go over 100%
-            progressBar.style.width = `${percentage}%`;
-            if (secondsPassed >= snippetLength) {
+            } else {
+                audio.pause();
                 clearInterval(updateProgressBar);
-                audio.pause(); // Automatically pause after duration
-                audio.currentTime = 0; // Reset audio
-                playButton.textContent = 'Play'; // Change back to 'Play'
+                audio.currentTime = 0;
+                playButton.textContent = 'Play';
                 isPlaying = false;
             }
-        }, 1000);
-    }
+        });
 
+        function playSnippet(previewUrl) {
+            audio.src = previewUrl;
+            audio.play();
+            playButton.textContent = 'Pause';
+            isPlaying = true;
 
-    document.getElementById('guess-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the form from submitting the traditional way
+            progressBar.style.width = '0%';
+            let secondsPassed = 0;
+            clearInterval(updateProgressBar);
+            updateProgressBar = setInterval(() => {
+                secondsPassed++;
+                const percentage = Math.min((secondsPassed / snippetLength) * 100, 100);
+                progressBar.style.width = `${percentage}%`;
+                if (secondsPassed >= snippetLength) {
+                    clearInterval(updateProgressBar);
+                    audio.pause();
+                    audio.currentTime = 0;
+                    playButton.textContent = 'Play';
+                    isPlaying = false;
+                }
+            }, 1000);
+        }
 
-        const guessInput = document.getElementById('song-guess');
-        const guess = guessInput.value; // Get the current guess
-        guessInput.value = ''; // Clear the input after getting the value
+        guessForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const guess = guessInput.value.trim();
+            guessInput.value = '';
 
-        // Add the guess to the list of previous guesses
-        const guessesList = document.getElementById('guesses-list');
-        const newGuess = document.createElement('li');
-        newGuess.textContent = guess;
-        guessesList.appendChild(newGuess);
+            fetch('/submit-guess', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ guess: guess }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const listItem = document.createElement('li');
+                listItem.textContent = guess;
+                guessesList.appendChild(listItem);
 
-        if (guess === correct_song) { 
-            document.getElementById('guess-result').className = 'correct-guess'; 
-            document.getElementById('guess-result').textContent = 'Correct! Well done!';
-            playButton.disabled = true; // Disable the play button if the game is won
-            guessInput.disabled = true; // Disable the input field if the game is won
-            document.getElementById('guess-form').querySelector('button[type="submit"]').disabled = true; // Disable the submit button in the guess form
-            audio.pause(); // Stop the audio if the guess is correct
+                if (data.result === 'correct') {
+                    guessResult.textContent = 'Correct! You guessed the song!';
+                    guessResult.className = 'correct-guess';
+                    endGame(true);
+                } else {
+                    guessesLeft--;
+                    if (guessesLeft > 0) {
+                        guessResult.textContent = `Incorrect. ${guessesLeft} guesses left.`;
+                        guessResult.className = 'incorrect-guess';
+                        snippetLength = Math.min(snippetLength + 1, 30);
+                    } else {
+                        guessResult.textContent = `Game over. The correct answer was: ${data.correct_answer}`;
+                        guessResult.className = 'incorrect-guess';
+                        endGame(false);
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function endGame(won) {
+            playButton.disabled = true;
+            guessInput.disabled = true;
+            guessForm.querySelector('button[type="submit"]').disabled = true;
+            audio.pause();
             clearInterval(updateProgressBar);
             progressBar.style.width = '0%';
             isPlaying = false;
-        } else {
-            guessesLeft--; // Decrement the number of guesses left
-            if (guessesLeft > 0) {
-                snippetLength = Math.min(snippetLength + 0.5, 30); // Increase snippet length for the next play
-                document.getElementById('guess-result').className = 'incorrect-guess'; 
-                document.getElementById('guess-result').textContent = `Incorrect. ${guessesLeft} guesses left.`;
-            } else {
-                // No guesses left, handle end of game (disable form, show message, etc.)
-                document.getElementById('guess-result').className = 'incorrect-guess'; // Apply incorrect guess class for game over
-                document.getElementById('guess-result').textContent = `Game Over. The song was ${correct_song}.`;
-                playButton.disabled = true; // Disable the play button if the game is over
-                guessInput.disabled = true; // Disable the input field if the game is won
-                document.getElementById('guess-form').querySelector('button[type="submit"]').disabled = true; // Disable the submit button in the guess form
+
+            const playAgainButton = document.createElement('button');
+            playAgainButton.textContent = 'Play Again';
+            playAgainButton.addEventListener('click', resetGame);
+            document.getElementById('game-controls').appendChild(playAgainButton);
+        }
+
+        function resetGame() {
+            guessesLeft = 5;
+            snippetLength = 1;
+            currentSongUrl = null;
+            playButton.disabled = false;
+            guessInput.disabled = false;
+            guessForm.querySelector('button[type="submit"]').disabled = false;
+            guessesList.innerHTML = '';
+            guessResult.textContent = '';
+            guessResult.className = '';
+            document.querySelector('#game-controls button:last-child').remove();
+        }
+
+        $(document).ready(function() {
+            fetch('/get-liked-songs')
+                .then(response => response.json())
+                .then(data => {
+                    $("#song-guess").autocomplete({
+                        source: data,
+                        minLength: 2,
+                    });
+                })
+                .catch(error => console.error('Error fetching liked songs:', error));
+        });
+
+        var modal = document.getElementById('myModal');
+        var span = document.getElementsByClassName('close')[0];
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.classList.add('modal-closing');
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    modal.classList.remove('modal-closing');
+                }, 500);
             }
         }
-    });
 
-    $(document).ready(function() {
-    fetch('/get-liked-songs')
-        .then(response => response.json())
-        .then(data => {
-            // console.log("Autocomplete data:", data); // Add this line to debug
-            $("#song-guess").autocomplete({
-                source: data, // Adjust formatting as needed
-                minLength: 2, // Start showing suggestions after 2 characters
-            });
-        })
-        .catch(error => console.error('Error fetching liked songs:', error));
-    });
+        window.onload = function() {
+            modal.style.display = "block";
+        }
 
-    // Get the modal
-    var modal = document.getElementById('myModal');
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName('close')[0];
-
-    // When the user clicks anywhere outside of the modal, close it
-   window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.classList.add('modal-closing');
-        setTimeout(() => {
-            modal.style.display = "none";
-            modal.classList.remove('modal-closing');
-        }, 500); // Match the timeout to the animation duration
-    }
-    }
-
-
-    // Open the modal when the page loads
-    window.onload = function() {
-        modal.style.display = "block";
-    }
-
-    // when the (x) is clicked
-    span.onclick = function() {
-        modal.classList.add('modal-closing'); // Start the closing animation
-        setTimeout(() => {
-            modal.style.display = "none"; // Hide the modal after the animation
-            modal.classList.remove('modal-closing'); // Clean up: remove the class if the modal needs to open again later
-        }, 500); // This timeout duration should match the animation duration
-    }
+        span.onclick = function() {
+            modal.classList.add('modal-closing');
+            setTimeout(() => {
+                modal.style.display = "none";
+                modal.classList.remove('modal-closing');
+            }, 500);
+        }
 
     </script>
 </body>
