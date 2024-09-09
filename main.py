@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, redirect, request, session, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -19,10 +20,13 @@ app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache timeout in seconds
 cache = Cache(app)
 
 # Replace these with your Spotify app credentials
-client_id = "3d817d22c6fa48a0a0f0c3ded9dee186"
-client_secret = "a10cb8549a244287b382948139819a43"
+client_id = os.environ.get('SPOTIFY_CLIENT_ID')
+client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET')
+redirect_uri = os.environ.get('SPOTIFY_REDIRECT_URI', "https://6c97b049-5cd4-452d-a841-1be26e6708a7-00-5ya245zd61fp.worf.replit.dev/callback")
+
 # redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
-redirect_uri = "http://localhost:8888/callback"
+# redirect_uri = "http://localhost:8888/callback"
+redirect_uri = "https://6c97b049-5cd4-452d-a841-1be26e6708a7-00-5ya245zd61fp.worf.replit.dev/callback"
 
 scope = "streaming user-read-email user-read-private user-modify-playback-state user-library-read"
 
@@ -33,12 +37,15 @@ sp_oauth = SpotifyOAuth(client_id=client_id,
                         scope=scope,
                         cache_path=".cache-" + str(uuid.uuid4()))
 
+
 @app.route('/')
 def login():
     if not session.get('token_info'):
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
-    return render_template('index.html')  # Your HTML file with the Web Playback SDK
+    return render_template(
+        'index.html')  # Your HTML file with the Web Playback SDK
+
 
 @app.route('/callback')
 def callback():
@@ -48,8 +55,10 @@ def callback():
     session['token_info'] = token_info
     return redirect('/')
 
+
 @app.route('/get-liked-songs')
-@cache.cached(timeout=300, key_prefix='liked_songs')  # Cache this view for 5 minutes
+@cache.cached(timeout=300,
+              key_prefix='liked_songs')  # Cache this view for 5 minutes
 def get_liked_songs():
     # Your logic to fetch liked songs
     sp = spotipy.Spotify(auth_manager=sp_oauth)
@@ -58,13 +67,14 @@ def get_liked_songs():
     songs = results['items']
 
     while results['next']:
-        results = sp.next(results)  
+        results = sp.next(results)
         songs.extend(results['items'])
-    
+
     # Assuming you want to return a simplified list of song names
     song_list = [song['track']['name'] for song in songs]
     print('got all songs')
     return jsonify(song_list)
+
 
 @app.route('/get-random-song')
 def get_random_liked_song():
@@ -106,25 +116,31 @@ def get_random_liked_song():
 
     session['correct_answer'] = track['name']
 
-    return jsonify({"previewUrl": track['preview_url'], "title": track['name']})
+    return jsonify({
+        "previewUrl": track['preview_url'],
+        "title": track['name']
+    })
+
 
 @app.route('/submit-guess', methods=['POST'])
 def submit_guess():
     data = request.get_json()
     guess = data.get('guess', '').strip().lower()
     correct_answer = session.get('correct_answer', '').lower()
-    
+
     if guess == correct_answer:
         result = "correct"
     else:
         result = "incorrect"
-    
+
     return jsonify({'result': result, 'correct_answer': correct_answer})
+
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
+
 if __name__ == "__main__":
-    app.run(debug=True, port=8888)
+    app.run(host='0.0.0.0', port=8080)
