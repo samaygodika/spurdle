@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Spurdle</title>
@@ -20,7 +21,8 @@
             margin-bottom: 30px;
         }
 
-        #game-controls, #guess-section {
+        #game-controls,
+        #guess-section {
             background-color: #282828;
             padding: 20px;
             border-radius: 10px;
@@ -114,7 +116,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0, 0, 0, 0.6);
         }
 
         .modal-content {
@@ -155,6 +157,7 @@
                 opacity: 0;
                 margin-top: 0%;
             }
+
             to {
                 opacity: 1;
                 margin-top: 10%;
@@ -166,6 +169,7 @@
                 opacity: 1;
                 margin-top: 10%;
             }
+
             to {
                 opacity: 0;
                 margin-top: 70%;
@@ -181,7 +185,7 @@
         }
 
         .close:hover,
-            .close:focus {
+        .close:focus {
             color: #000;
             text-decoration: none;
             cursor: pointer;
@@ -193,7 +197,8 @@
             margin-bottom: 20px;
         }
 
-        p, li {
+        p,
+        li {
             color: #555;
             font-size: 16px;
             line-height: 1.6;
@@ -216,10 +221,10 @@
         .modal-closing {
             animation: modalClose 0.5s forwards;
         }
-
     </style>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
+
 <body>
     <h1>Spurdle ft. Spotify</h1>
     <div id="game-controls">
@@ -233,7 +238,7 @@
     </div>
 
     <div id="guess-section">
-        <h2>Guess the Song</h2>
+        <h2 style="color: #FFFFFF;">Guess the Song</h2>
         <form id="guess-form">
             <input type="text" id="song-guess" name="songGuess" placeholder="Enter your guess here" required>
             <button type="submit">Submit Guess</button>
@@ -247,21 +252,21 @@
 
     <div id="myModal" class="modal">
         <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>How To Play</h2>
-          <h3>Guess the song in 5 tries</h3>
-           <!-- <p>You know it, it's from your liked songs on Spotify 😉</p> -->
-          <ul>
-            <li>Each guess must be the name of a song.</li>
-            <li>The length of the song preview will increase with each incorrect guess.</li>
-            <li>You know it, it's from your liked songs on Spotify 😉</li>
-          </ul>
-          <h3>Good luck!</h3>
+            <span class="close">&times;</span>
+            <h2>How To Play</h2>
+            <h3>Guess the song in 5 tries</h3>
+            <!-- <p>You know it, it's from your liked songs on Spotify 😉</p> -->
+            <ul>
+                <li>Each guess must be the name of a song.</li>
+                <li>The length of the song preview will increase with each incorrect guess.</li>
+                <li>You know it, it's from your liked songs on Spotify 😉</li>
+            </ul>
+            <h3>Good luck!</h3>
         </div>
     </div>
-      
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
 
@@ -280,7 +285,7 @@
         const guessesList = document.getElementById('guesses-list');
         const guessResult = document.getElementById('guess-result');
 
-        playButton.addEventListener('click', function() {
+        playButton.addEventListener('click', function () {
             if (!isPlaying) {
                 if (currentSongUrl === null) {
                     fetch('/get-random-song')
@@ -305,7 +310,7 @@
             }
         });
 
-        passButton.addEventListener('click', function() {
+        passButton.addEventListener('click', function () {
             if (guessesLeft > 1) {
                 guessesLeft--;
                 guessResult.textContent = `You passed. ${guessesLeft} guesses left.`;
@@ -344,7 +349,7 @@
             }, 1000);
         }
 
-        guessForm.addEventListener('submit', function(event) {
+        guessForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const guess = guessInput.value.trim();
             guessInput.value = '';
@@ -354,32 +359,32 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ guess: guess }),
+                body: JSON.stringify({guess: guess}),
             })
-            .then(response => response.json())
-            .then(data => {
-                const listItem = document.createElement('li');
-                listItem.textContent = guess;
-                guessesList.appendChild(listItem);
+                .then(response => response.json())
+                .then(data => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = guess;
+                    guessesList.appendChild(listItem);
 
-                if (data.result === 'correct') {
-                    guessResult.textContent = 'Correct! You guessed the song!';
-                    guessResult.className = 'correct-guess';
-                    endGame(true);
-                } else {
-                    guessesLeft--;
-                    if (guessesLeft > 0) {
-                        guessResult.textContent = `Incorrect. ${guessesLeft} guesses left.`;
-                        guessResult.className = 'incorrect-guess';
-                        snippetLength = Math.min(snippetLength + 1, 30);
+                    if (data.result === 'correct') {
+                        guessResult.textContent = 'Correct! You guessed the song!';
+                        guessResult.className = 'correct-guess';
+                        endGame(true);
                     } else {
-                        guessResult.textContent = `Game over. The correct answer was: ${data.correct_answer}`;
-                        guessResult.className = 'incorrect-guess';
-                        endGame(false);
+                        guessesLeft--;
+                        if (guessesLeft > 0) {
+                            guessResult.textContent = `Incorrect. ${guessesLeft} guesses left.`;
+                            guessResult.className = 'incorrect-guess';
+                            snippetLength = Math.min(snippetLength + 1, 30);
+                        } else {
+                            guessResult.textContent = `Game over. The correct answer was: ${data.correct_answer}`;
+                            guessResult.className = 'incorrect-guess';
+                            endGame(false);
+                        }
                     }
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                })
+                .catch(error => console.error('Error:', error));
         });
 
         function endGame(won) {
@@ -412,7 +417,7 @@
             document.querySelector('#game-controls button:last-child').remove();
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             fetch('/get-liked-songs')
                 .then(response => response.json())
                 .then(data => {
@@ -427,7 +432,7 @@
         var modal = document.getElementById('myModal');
         var span = document.getElementsByClassName('close')[0];
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modal) {
                 modal.classList.add('modal-closing');
                 setTimeout(() => {
@@ -437,11 +442,11 @@
             }
         }
 
-        window.onload = function() {
+        window.onload = function () {
             modal.style.display = "block";
         }
 
-        span.onclick = function() {
+        span.onclick = function () {
             modal.classList.add('modal-closing');
             setTimeout(() => {
                 modal.style.display = "none";
@@ -451,4 +456,5 @@
 
     </script>
 </body>
+
 </html>

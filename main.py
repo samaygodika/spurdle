@@ -27,8 +27,12 @@ redirect_uri = os.environ.get('SPOTIFY_REDIRECT_URI',
 
 # redirect_uri = "https://spurdle-4ce9b96bb79b.herokuapp.com/callback"
 # redirect_uri = "http://localhost:8888/callback"
-# redirect_uri = "https://6c97b049-5cd4-452d-a841-1be26e6708a7-00-5ya245zd61fp.worf.replit.dev/callback"
-redirect_uri = "https://spurdle.replit.app/callback"
+
+# UNCOMMENT FOR DEV
+redirect_uri = "https://6c97b049-5cd4-452d-a841-1be26e6708a7-00-5ya245zd61fp.worf.replit.dev/callback"
+
+# FOR PRODUCTION
+# redirect_uri = "https://spurdle.replit.app/callback"
 
 scope = "streaming user-read-email user-read-private user-modify-playback-state user-library-read"
 
