@@ -221,6 +221,19 @@
         .modal-closing {
             animation: modalClose 0.5s forwards;
         }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+            max-width: 200px;
+        }
+
     </style>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
@@ -229,7 +242,6 @@
     <h1>Spurdle ft. Spotify</h1>
     <div id="game-controls">
         <button id="play-button">Play</button>
-        <button id="pass-button">Pass</button>
         <audio id="song-snippet"></audio>
 
         <div id="progress-container">
@@ -238,10 +250,13 @@
     </div>
 
     <div id="guess-section">
-        <h2 style="color: #FFFFFF;">Guess the Song</h2>
+        <h2 style="color: #FFFFFF;" style="color: #FFFFFF;">Guess the Song</h2>
         <form id="guess-form">
             <input type="text" id="song-guess" name="songGuess" placeholder="Enter your guess here" required>
-            <button type="submit">Submit Guess</button>
+            <div class="button-group">
+                <button type="submit">Submit Guess</button>
+                <button id="pass-button" type="button">Pass</button>
+            </div>
         </form>
         <div id="guess-result"></div>
         <div id="previous-guesses">
