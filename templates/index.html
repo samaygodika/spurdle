@@ -224,6 +224,7 @@
     <h1>Spurdle ft. Spotify</h1>
     <div id="game-controls">
         <button id="play-button">Play</button>
+        <button id="pass-button" disabled>Pass</button>
         <audio id="song-snippet"></audio>
 
         <div id="progress-container">
@@ -271,6 +272,7 @@
         let currentSongUrl = null;
 
         const playButton = document.getElementById('play-button');
+        const passButton = document.getElementById('pass-button');
         const progressBar = document.getElementById('progress-bar');
         const audio = document.getElementById('song-snippet');
         const guessForm = document.getElementById('guess-form');
@@ -299,6 +301,19 @@
                 audio.currentTime = 0;
                 playButton.textContent = 'Play';
                 isPlaying = false;
+            }
+        });
+
+        passButton.addEventListener('click', function() {
+            if (guessesLeft > 0) {
+                guessesLeft--;
+                guessResult.textContent = `You passed. ${guessesLeft} guesses left.`;
+                guessResult.className = 'incorrect-guess';
+                snippetLength = Math.min(snippetLength + 1, 30);
+            } else {
+                guessResult.textContent = `Game over. The correct answer was: ${data.correct_answer}`;
+                guessResult.className = 'incorrect-guess';
+                endGame(false);
             }
         });
 
