@@ -224,7 +224,7 @@
     <h1>Spurdle ft. Spotify</h1>
     <div id="game-controls">
         <button id="play-button">Play</button>
-        <button id="pass-button" disabled>Pass</button>
+        <button id="pass-button">Pass</button>
         <audio id="song-snippet"></audio>
 
         <div id="progress-container">
@@ -287,6 +287,7 @@
                         .then(response => response.json())
                         .then(data => {
                             currentSongUrl = data.previewUrl;
+                            passButton.disabled = false;  // Enable pass button when a new song is loaded
                             playSnippet(currentSongUrl);
                         })
                         .catch(error => {
@@ -305,14 +306,17 @@
         });
 
         passButton.addEventListener('click', function() {
-            if (guessesLeft > 0) {
+            if (guessesLeft > 1) {
                 guessesLeft--;
                 guessResult.textContent = `You passed. ${guessesLeft} guesses left.`;
                 guessResult.className = 'incorrect-guess';
                 snippetLength = Math.min(snippetLength + 1, 30);
+                playSnippet(currentSongUrl);
             } else {
+                guessesLeft--;
                 guessResult.textContent = `Game over. The correct answer was: ${data.correct_answer}`;
                 guessResult.className = 'incorrect-guess';
+                passButton.disabled = true;  // Disable the pass button on the last guess
                 endGame(false);
             }
         });
@@ -380,6 +384,7 @@
 
         function endGame(won) {
             playButton.disabled = true;
+            passButton.disabled = true;  // Disable the pass button when the game ends
             guessInput.disabled = true;
             guessForm.querySelector('button[type="submit"]').disabled = true;
             audio.pause();
@@ -398,6 +403,7 @@
             snippetLength = 1;
             currentSongUrl = null;
             playButton.disabled = false;
+            passButton.disabled = false;  // Enable the pass button when resetting the game
             guessInput.disabled = false;
             guessForm.querySelector('button[type="submit"]').disabled = false;
             guessesList.innerHTML = '';
