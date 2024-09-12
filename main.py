@@ -63,22 +63,34 @@ def callback():
 
 
 @app.route('/get-liked-songs')
-@cache.cached(timeout=300,
-              key_prefix='liked_songs')  # Cache this view for 5 minutes
 def get_liked_songs():
-    # Your logic to fetch liked songs
     sp = spotipy.Spotify(auth_manager=sp_oauth)
-
+    
+    # Get the current user's ID
+    user_info = sp.current_user()
+    user_id = user_info['id']
+    
+    # Create a unique cache key for this user
+    cache_key = f'liked_songs_{user_id}'
+    
+    # Try to get the data from the cache
+    cached_data = cache.get(cache_key)
+    if cached_data is not None:
+        return jsonify(cached_data)
+    
+    # If not in cache, fetch from Spotify
     results = sp.current_user_saved_tracks()
     songs = results['items']
-
+    
     while results['next']:
         results = sp.next(results)
         songs.extend(results['items'])
-
-    # Assuming you want to return a simplified list of song names
+    
     song_list = [song['track']['name'] for song in songs]
-    print('got all songs')
+    
+    # Store in cache for 5 minutes
+    cache.set(cache_key, song_list, timeout=300)
+    
     return jsonify(song_list)
 
 
